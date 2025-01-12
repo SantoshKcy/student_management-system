@@ -1,13 +1,9 @@
 class Failure {
   final String message;
-  final int? statusCode;
-  const Failure({
-    required this.message,
-    this.statusCode,
-  });
 
-  @override
-  String toString() => 'Failure(message: $message, statusCode: $statusCode)';
+  Failure({
+    required this.message,
+  });
 }
 
 class LocalDatabaseFailure extends Failure {
@@ -16,13 +12,11 @@ class LocalDatabaseFailure extends Failure {
   });
 }
 
-class ApiFailure extends Failure {
-  @override
-  // ignore: overridden_fields
+class WebApiFailure extends Failure {
   final int statusCode;
 
-  ApiFailure({
-    required this.statusCode,
+  WebApiFailure({
     required super.message,
-  })
+    required this.statusCode,
+  });
 }
