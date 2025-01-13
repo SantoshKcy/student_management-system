@@ -25,7 +25,8 @@ class BatchHiveModel extends Equatable {
   factory BatchHiveModel.fromEntity(BatchEntity entity) {
     return BatchHiveModel(
       batchId: entity.batchId,
-      batchName: entity.batchName,
+      // batchName: entity.batchName,
+      batchName: 'Soft-${entity.batchName}',
     );
   }
 
