@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:softwarica_student_management_bloc/core/common/snackbar/my_snackbar.dart';
 import 'package:softwarica_student_management_bloc/features/auth/presentation/view/register_view.dart';
 import 'package:softwarica_student_management_bloc/features/auth/presentation/view_model/login/login_bloc.dart';
-import 'package:softwarica_student_management_bloc/features/home/presentation/view/home_view.dart';
 
 class LoginView extends StatelessWidget {
   LoginView({super.key});
 
   final _formKey = GlobalKey<FormState>();
-  final _usernameController = TextEditingController(text: 'kiran');
-  final _passwordController = TextEditingController(text: 'kiran123');
+  final _usernameController = TextEditingController();
+  final _passwordController = TextEditingController();
 
   final _gap = const SizedBox(height: 8);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,30 +24,19 @@ class LoginView extends StatelessWidget {
                 padding: const EdgeInsets.all(8),
                 child: Column(
                   children: [
-                    // const Text(
-                    //   'Login',
-                    //   style: TextStyle(
-                    //     fontSize: 30,
-                    //     fontFamily: 'Brand Bold',
-                    //   ),
-                    // ),
-                    BlocBuilder<LoginBloc, LoginState>(
-                      builder: (context, state) {
-                        return Text(
-                          'Login',
-                          style: TextStyle(
-                            fontSize: 30,
-                            fontFamily: 'Brand Bold',
-                          ),
-                        );
-                      },
+                    const Text(
+                      'Login',
+                      style: TextStyle(
+                        fontSize: 30,
+                        fontFamily: 'Brand Bold',
+                      ),
                     ),
-                    _gap,
+                    SizedBox(height: 50),
                     TextFormField(
                       key: const ValueKey('username'),
                       controller: _usernameController,
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
+                      obscureText: true,
+                      decoration: InputDecoration(
                         labelText: 'Username',
                       ),
                       validator: (value) {
@@ -77,28 +65,29 @@ class LoginView extends StatelessWidget {
                     ElevatedButton(
                       onPressed: () async {
                         if (_formKey.currentState!.validate()) {
-                          if (_usernameController.text == 'kiran' &&
-                              _passwordController.text == 'kiran123') {
-                            // context.read<LoginBloc>().add(
-                            //       LoginStudentEvent(
-                            //         email: _usernameController.text,
-                            //         password: _passwordController.text,
-                            //       ),
-                            //     );
+                          context.read<LoginBloc>().add(
+                                LoginStudentEvent(
+                                  context: context,
+                                  username: _usernameController.text,
+                                  password: _passwordController.text,
+                                ),
+                              );
 
-                            context.read<LoginBloc>().add(
-                                  NavigateHomeScreenEvent(
-                                    destination: HomeView(),
-                                    context: context,
-                                  ),
-                                );
-                          } else {
-                            showMySnackBar(
-                              context: context,
-                              message: 'Invalid username or password',
-                              color: Colors.red,
-                            );
-                          }
+                          //   if (_usernameController.text == 'kiran' &&
+                          //       _passwordController.text == 'kiran123') {
+                          //     context.read<LoginBloc>().add(
+                          //           NavigateHomeScreenEvent(
+                          //             destination: HomeView(),
+                          //             context: context,
+                          //           ),
+                          //         );
+                          //   } else {
+                          //     showMySnackBar(
+                          //       context: context,
+                          //       message: 'Invalid username or password',
+                          //       color: Colors.red,
+                          //     );
+                          //   }
                         }
                       },
                       child: const SizedBox(
@@ -119,7 +108,7 @@ class LoginView extends StatelessWidget {
                       key: const ValueKey('registerButton'),
                       onPressed: () {
                         context.read<LoginBloc>().add(
-                          NavigateRegisterScreenEvent(
+                              NavigateRegisterScreenEvent(
                                 destination: RegisterView(),
                                 context: context,
                               ),

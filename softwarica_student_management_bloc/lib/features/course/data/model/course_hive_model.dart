@@ -36,6 +36,18 @@ class CourseHiveModel extends Equatable {
     );
   }
 
+  // To Entity List
+  static List<CourseEntity> toEntityList(List<CourseHiveModel> entityList) {
+    return entityList.map((data) => data.toEntity()).toList();
+  }
+
+  // From entity list
+  static List<CourseHiveModel> fromEntityList(List<CourseEntity> entityList) {
+    return entityList
+        .map((entity) => CourseHiveModel.fromEntity(entity))
+        .toList();
+  }
+
   @override
   List<Object?> get props => [courseId, courseName];
 }
