@@ -1,4 +1,6 @@
+import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
+import 'package:softwarica_student_management_bloc/core/network/api_service.dart';
 import 'package:softwarica_student_management_bloc/core/network/hive_service.dart';
 import 'package:softwarica_student_management_bloc/features/auth/data/data_source/local_data_source/auth_local_datasource.dart';
 import 'package:softwarica_student_management_bloc/features/auth/data/repository/auth_local_repository/auth_local_repository.dart';
@@ -21,10 +23,16 @@ import 'package:softwarica_student_management_bloc/features/course/presentation/
 import 'package:softwarica_student_management_bloc/features/home/presentation/view_model/home_cubit.dart';
 import 'package:softwarica_student_management_bloc/features/splash/presentation/view_model/splash_cubit.dart';
 
+import '../../features/batch/data/data_source/batch_remote_data_source.dart';
+import '../../features/batch/data/repository/batch_remote_repository/batch_remote_repository.dart';
+import '../../features/course/data/data_source/course_remote_data_source.dart';
+import '../../features/course/data/repository/course_remote_repositoy/course_remote_repository.dart';
+
 final getIt = GetIt.instance;
 
 Future<void> initDependencies() async {
-  _initHiveService();
+  await _initHiveService();
+  await _initApiService();
   await _initBatchDependencies();
   await _initCourseDependencies();
   await _initHomeDependencies();
@@ -39,6 +47,14 @@ _initHiveService() {
   );
 }
 
+_initApiService() {
+  //Remote Data Source
+
+  getIt.registerLazySingleton<Dio>(
+    () => ApiService(Dio()).dio,
+  );
+}
+
 _initBatchDependencies() async {
   // local datasource
   getIt.registerLazySingleton<BatchLocalDatasource>(
@@ -47,25 +63,45 @@ _initBatchDependencies() async {
     ),
   );
 
-  // local data repository
-  getIt.registerLazySingleton<BatchLocalRepository>(
-    () => BatchLocalRepository(
-      batchLocalDatasource: getIt(),
+  //Remote Data Source
+
+  getIt.registerLazySingleton<BatchRemoteDataSource>(
+    () => BatchRemoteDataSource(
+      dio: getIt<Dio>(),
     ),
   );
 
-  // use case
+  // local data repository
+  getIt.registerLazySingleton<BatchLocalRepository>(
+    () => BatchLocalRepository(
+      batchLocalDatasource: getIt<BatchLocalDatasource>(),
+    ),
+  );
+
+  //batch remote repository
+
+  getIt.registerLazySingleton(() => BatchRemoteRepository(
+      batchRemoteDataSource: getIt<BatchRemoteDataSource>()));
+
+  // use case local datasource
   getIt.registerLazySingleton<GetAllBatchUsecase>(
     () => GetAllBatchUsecase(
       repository: getIt<BatchLocalRepository>(),
     ),
   );
 
+  //use case remote datasource
   getIt.registerLazySingleton<CreateBatchUsecase>(
     () => CreateBatchUsecase(
-      repository: getIt<BatchLocalRepository>(),
+      repository: getIt<BatchRemoteRepository>(),
     ),
   );
+
+  // getIt.registerLazySingleton<CreateBatchUsecase>(
+  //   () => CreateBatchUsecase(
+  //     repository: getIt<BatchLocalRepository>(),
+  //   ),
+  // );
 
   getIt.registerLazySingleton<DeleteBatchUsecase>(
     () => DeleteBatchUsecase(
@@ -91,12 +127,23 @@ _initCourseDependencies() async {
     ),
   );
 
+  // Remote datasource
+  getIt.registerLazySingleton<CourseRemoteDataSource>(
+    () => CourseRemoteDataSource(
+      dio: getIt<Dio>(),
+    ),
+  );
+
   // local data repository
   getIt.registerLazySingleton<CourseLocalRepository>(
     () => CourseLocalRepository(
       courseLocalDatasource: getIt(),
     ),
   );
+
+  //Remote data Repository
+  getIt.registerLazySingleton(() => CourseRemoteRepository(
+      courseRemoteDataSource: getIt<CourseRemoteDataSource>()));
 
   // use case
   getIt.registerLazySingleton<GetAllCourseUsecase>(
@@ -105,9 +152,15 @@ _initCourseDependencies() async {
     ),
   );
 
+  // getIt.registerLazySingleton<CreateCourseUsecase>(
+  //   () => CreateCourseUsecase(
+  //     repository: getIt<CourseLocalRepository>(),
+  //   ),
+  // );
+
   getIt.registerLazySingleton<CreateCourseUsecase>(
     () => CreateCourseUsecase(
-      repository: getIt<CourseLocalRepository>(),
+      repository: getIt<CourseRemoteRepository>(),
     ),
   );
 
