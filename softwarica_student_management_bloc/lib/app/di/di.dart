@@ -84,9 +84,15 @@ _initBatchDependencies() async {
       batchRemoteDataSource: getIt<BatchRemoteDataSource>()));
 
   // use case local datasource
+  // getIt.registerLazySingleton<GetAllBatchUsecase>(
+  //   () => GetAllBatchUsecase(
+  //     repository: getIt<BatchLocalRepository>(),
+  //   ),
+  // );
+
   getIt.registerLazySingleton<GetAllBatchUsecase>(
     () => GetAllBatchUsecase(
-      repository: getIt<BatchLocalRepository>(),
+      repository: getIt<BatchRemoteRepository>(),
     ),
   );
 
@@ -103,9 +109,15 @@ _initBatchDependencies() async {
   //   ),
   // );
 
+  // getIt.registerLazySingleton<DeleteBatchUsecase>(
+  //   () => DeleteBatchUsecase(
+  //     repository: getIt<BatchLocalRepository>(),
+  //   ),
+  // );
+
   getIt.registerLazySingleton<DeleteBatchUsecase>(
     () => DeleteBatchUsecase(
-      repository: getIt<BatchLocalRepository>(),
+      repository: getIt<BatchRemoteRepository>(),
     ),
   );
 

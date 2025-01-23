@@ -4,6 +4,8 @@ import 'package:softwarica_student_management_bloc/features/course/data/data_sou
 import 'package:softwarica_student_management_bloc/features/course/data/model/course_api_model.dart';
 import 'package:softwarica_student_management_bloc/features/course/domain/entity/course_entity.dart';
 
+import '../dto/get_all_course_dto.dart';
+
 class CourseRemoteDataSource implements ICourseDataSource {
   final Dio _dio;
 
@@ -30,14 +32,36 @@ class CourseRemoteDataSource implements ICourseDataSource {
   }
 
   @override
-  Future<void> deleteCourse(String id) {
-    // TODO: implement deleteCourse
-    throw UnimplementedError();
+  Future<void> deleteCourse(String id) async {
+    try {
+      var response = await _dio.delete('${ApiEndpoints.deleteCourse}/$id');
+
+      if (response.statusCode == 200 || response.statusCode == 204) {
+        return;
+      } else {
+        throw Exception(response.statusMessage);
+      }
+    } on DioException catch (e) {
+      throw Exception('DioException: ${e.message}');
+    } catch (e) {
+      throw Exception('Error: ${e.toString()}');
+    }
   }
 
   @override
   Future<List<CourseEntity>> getCourses() async {
-    // TODO: implement getCourse
-    throw UnimplementedError();
+    try {
+      var response = await _dio.get(ApiEndpoints.getAllCourse);
+      if (response.statusCode == 200) {
+        GetAllCourseDTO courseAddDTO = GetAllCourseDTO.fromJson(response.data);
+        return CourseApiModel.toEntityList(courseAddDTO.data);
+      } else {
+        throw Exception(response.statusMessage);
+      }
+    } on DioException catch (e) {
+      throw Exception(e);
+    } catch (e) {
+      throw Exception(e);
+    }
   }
 }
